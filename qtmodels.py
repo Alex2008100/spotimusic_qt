@@ -231,6 +231,7 @@ class EditSongDlg(QtWidgets.QDialog, Ui_EditSong):
             tag['title']=title
             tag['artist']=artist
             tag['album']=album
+            tag.save()
             return (title, artist, album)
 
 #Edit playlist dialog /////////////////
@@ -455,6 +456,7 @@ class Ui_MainWindow(object):
         self.menuAdd.setTitle(_translate("MainWindow", "Files"))
         self.actionAdd_song.setText(_translate("MainWindow", "Add song"))
         self.actionAdd_playlist.setText(_translate("MainWindow", "Add playlist"))
+        self.horizontalSlider.setValue(50)
 
     def render_playlists(self):
         self.playlistWidget.clear()
@@ -507,11 +509,13 @@ class Ui_MainWindow(object):
         mixer.music.load(Controller.instance().songs[song_id].path)
         self.volume_change()
         mixer.music.play(-1, 0)
+        self.pauseButton.setText('Pause')
         self.titleLabel.setText(Controller.instance().songs[song_id].title)
         self.artistLabel.setText(Controller.instance().songs[song_id].artist)
 
     def stop_song(self):
         mixer.music.stop()
+        self.pauseButton.setText('Pause')
         Controller.instance().selected_song = None
 
     def pause_song(self):
@@ -541,7 +545,7 @@ class PlaylistWidget(QtWidgets.QWidget):
         self.playlistName.setObjectName("playlistName")
         self.horizontalLayout.addWidget(self.playlistName)
 
-        if playlist.title == 'All':
+        if not playlist.title == 'all':
             self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
             self.customContextMenuRequested.connect(lambda point:self.popMenu.exec_(self.mapToGlobal(point)))
 
